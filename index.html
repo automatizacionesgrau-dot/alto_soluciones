@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Propuesta Ad-Hoc para Alto Interiorismo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .card {
+            background-color: white;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid #e5e7eb;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        .card.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.1);
+        }
+        .card-content-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.8s ease-in-out, padding 0.8s ease-in-out, background-color 0.5s;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+        .card.active {
+             box-shadow: 0 20px 45px rgba(60, 60, 90, 0.15);
+        }
+        .card.active .card-content-details {
+            max-height: 2000px;
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+            background-color: #fafcff;
+        }
+        .rotate-icon {
+            transition: transform 0.5s ease;
+        }
+        .card.active .rotate-icon {
+            transform: rotate(180deg);
+        }
+        .timeline-step {
+            position: relative;
+            padding-left: 2rem;
+            padding-bottom: 1.5rem;
+            border-left: 2px solid #e5e7eb;
+        }
+        .timeline-step:last-child {
+            border-left: 2px solid transparent;
+            padding-bottom: 0;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -0.6rem;
+            top: 0.15rem;
+            width: 1.1rem;
+            height: 1.1rem;
+            border-radius: 50%;
+            background-color: #3b82f6;
+            border: 3px solid white;
+            transition: transform 0.3s ease;
+        }
+        .timeline-step:hover .timeline-dot {
+            transform: scale(1.2);
+        }
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .fade-in-up.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Estilos para el modal legal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.is-visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.is-visible .modal-content {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+
+        <!-- Encabezado con Logo -->
+        <header class="text-center mb-16 fade-in-up">
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">SOLUCIONES <span class="text-blue-600">para Alto Interiorismo</span></h1>
+            <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">Hola Luís, hemos analizado vuestro posicionamiento y los desafíos del sector para ofrecerte una solución única.</p>
+        </header>
+
+        <!-- Sección de Análisis de Desafíos -->
+        <section class="mb-20 fade-in-up" style="transition-delay: 200ms;">
+            <div class="bg-white p-8 rounded-3xl shadow-lg border border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2 text-center">Entendemos vuestro mundo</h2>
+                <p class="text-center text-gray-600 mb-8 max-w-3xl mx-auto">Vuestra firma no solo entrega proyectos, crea experiencias. Eso implica desafíos únicos que la tecnología puede ayudar a superar, liberando vuestro talento para lo que de verdad importa: el diseño y el cliente.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="p-4">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-blue-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                        <h3 class="font-semibold text-gray-800">Relación con el Cliente</h3>
+                        <p class="text-sm text-gray-500 mt-1">Exige comunicación constante y una transparencia total que los sistemas manuales dificultan.</p>
+                    </div>
+                    <div class="p-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-blue-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                        <h3 class="font-semibold text-gray-800">Gestión de Proveedores</h3>
+                        <p class="text-sm text-gray-500 mt-1">Coordinar artesanos y marcas de lujo requiere un seguimiento preciso para evitar retrasos costosos.</p>
+                    </div>
+                    <div class="p-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto text-blue-500 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 8h6m-5 4h5m2 8H8a2 2 0 01-2-2V6a2 2 0 012-2h4l4 4v10a2 2 0 01-2 2z" /></svg>
+                        <h3 class="font-semibold text-gray-800">Fuga de Rentabilidad</h3>
+                        <p class="text-sm text-gray-500 mt-1">El tiempo administrativo es el mayor coste oculto. Automatizarlo protege vuestros márgenes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grid de Propuestas -->
+        <div id="proposals-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Las tarjetas se insertarán aquí dinámicamente -->
+        </div>
+
+        <!-- Resumen Final -->
+        <div class="mt-20 bg-gray-900 text-white p-10 rounded-3xl text-center shadow-2xl fade-in-up">
+            <h2 class="text-3xl font-bold mb-4">El futuro de Alto Interiorismo: más diseño, menos gestión.</h2>
+            <p class="text-lg text-gray-300 max-w-3xl mx-auto">
+                El resultado es claro: <span class="font-semibold text-blue-400">más tiempo para la creatividad, clientes más satisfechos y un control total del negocio</span> que os permitirá escalar manteniendo la excelencia que os define.
+            </p>
+            <p class="mt-6 text-gray-400">Seguiréis usando Odoo y Teams, pero con "superpoderes" que eliminan las tareas repetitivas.</p>
+        </div>
+    </div>
+    
+    <footer class="text-center py-8 text-gray-500 text-sm">
+        <p>&copy; 2025 www.pracmatik.com | Todos los derechos reservados | <a href="#" id="legal-link" class="hover:text-blue-600 underline">Aviso Legal y Política de Privacidad</a></p>
+    </footer>
+
+    <!-- Modal para contenido legal -->
+    <div id="legal-modal" class="modal-overlay">
+        <div class="modal-content relative">
+            <button id="close-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800">&times;</button>
+            <h2 class="text-xl font-bold mb-4">Aviso Legal y Política de Privacidad</h2>
+            <div class="text-sm text-gray-600 space-y-3">
+                <p><strong>1. DATOS IDENTIFICATIVOS:</strong> En cumplimiento con el deber de información recogido en artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y del Comercio Electrónico, a continuación se reflejan los siguientes datos: la empresa titular de dominio web es Pracmatik S.L. (en adelante Pracmatik), con domicilio a estos efectos en [Dirección Fiscal] número de C.I.F.: [CIF] inscrita en el Registro Mercantil de [Ciudad] en el tomo [Tomo], folio [Folio], hoja [Hoja], inscripción [Inscripción]. Correo electrónico de contacto: [Email de contacto] del sitio web.</p>
+                <p><strong>2. USUARIOS:</strong> El acceso y/o uso de este portal de Pracmatik atribuye la condición de USUARIO, que acepta, desde dicho acceso y/o uso, las Condiciones Generales de Uso aquí reflejadas. Las citadas Condiciones serán de aplicación independientemente de las Condiciones Generales de Contratación que en su caso resulten de obligado cumplimiento.</p>
+                <p><strong>3. USO DEL PORTAL:</strong> www.pracmatik.com proporciona el acceso a multitud de informaciones, servicios, programas o datos (en adelante, "los contenidos") en Internet pertenecientes a Pracmatik o a sus licenciantes a los que el USUARIO pueda tener acceso. El USUARIO asume la responsabilidad del uso del portal. Dicha responsabilidad se extiende al registro que fuese necesario para acceder a determinados servicios o contenidos. [...]</p>
+                 <p><strong>4. PROTECCIÓN DE DATOS:</strong> Pracmatik cumple con las directrices de la Ley Orgánica 15/1999 de 13 de diciembre de Protección de Datos de Carácter Personal, el Real Decreto 1720/2007 de 21 de diciembre por el que se aprueba el Reglamento de desarrollo de la Ley Orgánica y demás normativa vigente en cada momento, y vela por garantizar un correcto uso y tratamiento de los datos personales del usuario. [...]</p>
+                <p><strong>5. PROPIEDAD INTELECTUAL E INDUSTRIAL:</strong> Pracmatik por sí o como cesionaria, es titular de todos los derechos de propiedad intelectual e industrial de su página web, así como de los elementos contenidos en la misma (a título enunciativo, imágenes, sonido, audio, vídeo, software o textos; marcas o logotipos, combinaciones de colores, estructura y diseño, selección de materiales usados, programas de ordenador necesarios para su funcionamiento, acceso y uso, etc.), titularidad de Pracmatik o bien de sus licenciantes. Todos los derechos reservados. [...]</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const proposals = [
+            {
+                id: 1,
+                title: "Presupuestos de Alta Costura",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>`,
+                problem: "Cada presupuesto, con sus materiales exclusivos y márgenes específicos, consume un tiempo valioso que podríais dedicar al cliente. El seguimiento manual se convierte en un lujo que no siempre os podéis permitir.",
+                solution: "Un sistema que genera propuestas impecables desde plantillas personalizadas, reflejando la calidad de vuestra marca, y que realiza un seguimiento automático para que ninguna oportunidad se enfríe.",
+                example: "Mientras revisas los acabados en una obra, el sistema ha enviado dos propuestas detalladas y ha notificado a tu equipo que un cliente importante ha abierto la suya por tercera vez.",
+                benefits: "Agilidad, una imagen de marca consistente y profesional, y una tasa de cierre mayor al asegurar un seguimiento puntual y sistemático.",
+                timeline: [
+                    { phase: "Definición de márgenes y plantillas de lujo", duration: "1 semana" },
+                    { phase: "Creación del sistema de generación automática", duration: "3 semanas" },
+                    { phase: "Testeo con propuestas reales", duration: "2 semanas" },
+                ],
+                total: "6 semanas"
+            },
+            {
+                id: 2,
+                title: "Visión 360º de Proyectos",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>`,
+                problem: "La excelencia requiere control. Cuando la información del proyecto está dispersa, se pierde agilidad y se corre el riesgo de no detectar desviaciones hasta que es demasiado tarde, afectando al cliente y al margen.",
+                solution: "Un dashboard ejecutivo que centraliza toda la información clave del proyecto (avance, costes, margen) y os alerta proactivamente en Teams si algo requiere vuestra atención.",
+                example: "Estás en una reunión y, desde tu tablet, muestras al cliente el avance en tiempo real, el estado de sus pedidos especiales y el control presupuestario, transmitiendo una confianza absoluta.",
+                benefits: "Control total, decisiones basadas en datos y la capacidad de anticiparse a los problemas, reforzando la confianza del cliente.",
+                timeline: [
+                    { phase: "Definición de KPIs críticos del negocio", duration: "2 semanas" },
+                    { phase: "Creación del panel con datos de Odoo", duration: "4 semanas" },
+                    { phase: "Prueba y ajustes con proyectos en curso", duration: "2 semanas" },
+                ],
+                total: "8 semanas"
+            },
+            {
+                id: 3,
+                title: "Stock Inteligente",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4M4 7l8 5 8-5m-8 5v10" /></svg>`,
+                problem: "La rotura de stock de un material a medida puede paralizar un proyecto de lujo durante semanas. El exceso de stock, por otro lado, es capital inmovilizado que podría estar invertido en crecer.",
+                solution: "Un sistema que monitoriza los niveles de stock y, basándose en mínimos inteligentes, prepara borradores de pedidos para que solo tengáis que aprobarlos. Cero roturas, cero excesos.",
+                example: "Recibes un aviso en el móvil: 'Nivel bajo de mármol de Carrara. Pedido preparado al proveedor italiano'. Con un clic, lo apruebas antes de que afecte a la planificación de la obra.",
+                benefits: "Garantizar la continuidad de las obras, optimizar el flujo de caja y reducir el capital inmovilizado en el almacén.",
+                timeline: [
+                    { phase: "Definición de stock de seguridad y proveedores", duration: "1 semana" },
+                    { phase: "Construcción del sistema de control", duration: "3 semanas" },
+                    { phase: "Testeo con materiales clave", duration: "2 semanas" },
+                ],
+                total: "6 semanas"
+            },
+             {
+                id: 4,
+                title: "Rentabilidad por Hora de Diseño",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+                problem: "El tiempo de vuestro equipo es el activo más valioso. Si no se imputa correctamente, es imposible saber la rentabilidad real de un proyecto y se corre el riesgo de infravalorar el esfuerzo creativo.",
+                solution: "Un sistema que lee las agendas y asigna las horas (visitas, reuniones, tiempo de diseño) automáticamente a cada proyecto en Odoo. El control se vuelve invisible y preciso.",
+                example: "Tu jefe de obra pasa la mañana en una visita. Esas horas, junto con el tiempo de preparación, se imputan al proyecto correcto sin que nadie tenga que rellenar una sola hoja de horas.",
+                benefits: "Conocimiento exacto de la rentabilidad, presupuestos futuros más precisos y liberación de la carga administrativa para todo el equipo.",
+                timeline: [
+                    { phase: "Definición de reglas de asignación", duration: "2 semanas" },
+                    { phase: "Construcción del sistema de captura", duration: "3 semanas" },
+                    { phase: "Prueba con un equipo piloto", duration: "2 semanas" },
+                ],
+                total: "7 semanas"
+            },
+            {
+                id: 5,
+                title: "Pedidos a Proveedores en Piloto Automático",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>`,
+                problem: "Gestionar pedidos a múltiples artesanos y proveedores, cada uno con sus condiciones y plazos, es una tarea repetitiva y crítica. Un error puede impactar en toda la cadena de montaje del proyecto.",
+                solution: "El sistema genera y envía los pedidos automáticamente según las necesidades del proyecto, y actualiza Odoo cuando el proveedor confirma, manteniendo a todo el equipo informado.",
+                example: "Tras definir los materiales en la reunión de planificación, el sistema ya ha enviado las órdenes de compra a los tres proveedores implicados. Recibes copia de la confirmación de uno de ellos antes de llegar a la oficina.",
+                benefits: "Cero errores manuales, agilidad en la cadena de suministro y trazabilidad completa de cada pedido sin esfuerzo.",
+                timeline: [
+                    { phase: "Revisión de plantillas y proveedores clave", duration: "1 semana" },
+                    { phase: "Construcción del sistema de envío y seguimiento", duration: "3 semanas" },
+                    { phase: "Prueba con proveedores de confianza", duration: "2 semanas" },
+                ],
+                total: "6 semanas"
+            },
+            {
+                id: 6,
+                title: "Cierre y Fidelización 'White Glove'",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`,
+                problem: "El final del proyecto es un momento clave para la imagen de marca. Tareas administrativas como informes finales, facturas o encuestas de satisfacción a menudo se demoran, empañando una entrega impecable.",
+                solution: "Al cerrar un proyecto en Odoo, se dispara una secuencia automática: se genera el informe de rentabilidad, se envía una elegante encuesta de satisfacción y se programan las tareas de postventa.",
+                example: "Entregas las llaves de un proyecto un viernes. El lunes, el cliente recibe un email de agradecimiento con la encuesta, y tú ya tienes el informe económico final en tu bandeja de entrada.",
+                benefits: "Una imagen de marca impecable hasta el final, feedback para la mejora continua y un control financiero preciso de cada proyecto.",
+                timeline: [
+                    { phase: "Diseño del informe final y encuesta de satisfacción", duration: "1 semana" },
+                    { phase: "Construcción de la secuencia de cierre", duration: "3 semanas" },
+                    { phase: "Prueba con un proyecto finalizado", duration: "2 semanas" },
+                ],
+                total: "6 semanas"
+            },
+        ];
+
+        const grid = document.getElementById('proposals-grid');
+
+        proposals.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'card cursor-pointer';
+            card.dataset.id = p.id;
+            
+            const timelineHTML = p.timeline.map(step => `
+                <div class="timeline-step">
+                    <div class="timeline-dot"></div>
+                    <p class="font-semibold text-gray-800">${step.phase}</p>
+                    <p class="text-sm text-gray-500">${step.duration}</p>
+                </div>
+            `).join('');
+
+            card.innerHTML = `
+                <div class="p-6 md:p-8">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center space-x-4">
+                            ${p.icon}
+                            <h3 class="text-xl font-semibold text-gray-900">${p.title}</h3>
+                        </div>
+                        <div class="p-2 rounded-full hover:bg-gray-100">
+                             <svg class="h-6 w-6 text-gray-400 rotate-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-gray-600">${p.problem}</p>
+                </div>
+                <div class="card-content-details px-6 md:px-8 border-t border-gray-100">
+                    <div class="pt-6">
+                        <h4 class="font-semibold text-gray-500 uppercase tracking-wider text-sm mb-4">La Solución</h4>
+                        <p class="mb-6 text-gray-700">${p.solution}</p>
+                        
+                        <div class="bg-blue-50 p-4 rounded-xl border border-blue-200 mb-6 text-blue-900">
+                           <p class="text-sm"><span class="font-semibold">En la práctica:</span> ${p.example}</p>
+                        </div>
+                        
+                        <h4 class="font-semibold text-gray-500 uppercase tracking-wider text-sm mb-4">Beneficios Directos</h4>
+                        <p class="mb-6 text-gray-700">${p.benefits}</p>
+
+                        <h4 class="font-semibold text-gray-500 uppercase tracking-wider text-sm mb-4">Hoja de Ruta</h4>
+                        <div class="relative">
+                            ${timelineHTML}
+                        </div>
+                        <div class="text-right font-bold text-lg text-blue-600 mt-4">
+                            Implementación: ${p.total}
+                        </div>
+                    </div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+        
+        grid.addEventListener('click', (e) => {
+            const card = e.target.closest('.card');
+            if (card) {
+                const isActive = card.classList.contains('active');
+                
+                document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+
+                if (!isActive) {
+                    card.classList.add('active');
+                }
+            }
+        });
+
+        // Animation on scroll
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.card, .fade-in-up').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Modal logic
+        const legalModal = document.getElementById('legal-modal');
+        const legalLink = document.getElementById('legal-link');
+        const closeModal = document.getElementById('close-modal');
+
+        legalLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            legalModal.classList.add('is-visible');
+        });
+
+        closeModal.addEventListener('click', () => {
+            legalModal.classList.remove('is-visible');
+        });
+
+        legalModal.addEventListener('click', (e) => {
+            if (e.target === legalModal) {
+                legalModal.classList.remove('is-visible');
+            }
+        });
+
+    </script>
+</body>
+</html>
+
+
